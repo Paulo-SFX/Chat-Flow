@@ -1,0 +1,12 @@
+Flask==3.0.3
+Flask-SocketIO==5.3.6
+python-socketio==5.11.2
+python-engineio==4.9.0
+mysql-connector-python==8.4.0
+Werkzeug==3.0.3
+python-dotenv==1.0.1
+
+# Opcional: só necessário se você mudar SOCKETIO_ASYNC_MODE para "eventlet"
+# em config.py (recomendado apenas em produção, com Python 3.11 ou 3.12 —
+# o eventlet ainda não é totalmente compatível com Python 3.13).
+# eventlet==0.36.1

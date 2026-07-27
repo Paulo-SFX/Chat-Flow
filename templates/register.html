@@ -1,0 +1,75 @@
+{#
+    register.html
+    --------------
+    Tela de cadastro. Os atributos HTML5 (required, minlength, maxlength)
+    fazem uma validação básica só de UX — a validação definitiva (incluindo
+    checagem de nome de usuário/e-mail já em uso) acontece em
+    routes/auth.py::registro(). Em caso de erro, os campos `nome_usuario`
+    e `email` são reaproveitados via `value="{{ ... }}"` para o usuário
+    não precisar redigitar tudo de novo.
+#}
+{% extends "base.html" %}
+{% block titulo %}Criar conta · ChatFlow{% endblock %}
+
+{% block conteudo %}
+<div class="auth-page">
+    <div class="auth-card fade-in">
+        <div class="auth-brand">
+            <div class="auth-logo"><i class="fa-solid fa-comments"></i></div>
+            <h1>Criar conta</h1>
+            <p>Leva menos de um minuto.</p>
+        </div>
+
+        <form method="POST" class="auth-form" novalidate>
+            <div class="input-group">
+                <label for="nome_usuario">Nome de usuário</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-at"></i>
+                    <!-- Valor preenchido novamente após erro de validação no backend -->
+                    <input type="text" id="nome_usuario" name="nome_usuario" placeholder="ex: joao_dev"
+                           value="{{ nome_usuario or '' }}" required autofocus minlength="3" maxlength="30">
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="email">E-mail</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" name="email" placeholder="email@exemplo.com"
+                           value="{{ email or '' }}" required>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="senha" name="senha" placeholder="Mínimo 6 caracteres" required minlength="6">
+                    <button type="button" class="toggle-senha" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="confirmar_senha">Confirmar senha</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-lock"></i>
+                    <!-- A igualdade entre senha e confirmar_senha é checada no backend -->
+                    <input type="password" id="confirmar_senha" name="confirmar_senha" placeholder="Repita a senha" required minlength="6">
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fa-solid fa-user-plus"></i> Criar conta
+            </button>
+        </form>
+
+        <p class="auth-footer">
+            Já tem uma conta? <a href="{{ url_for('auth.login') }}">Entrar</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

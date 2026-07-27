@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block titulo %}{{ usuario.nome_usuario }} · Perfil{% endblock %}
+
+{% block conteudo %}
+<div class="pagina-secundaria">
+    <header class="pagina-topo">
+        <a href="{{ url_for('chat.index') }}" class="icone-btn"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1>Perfil</h1>
+    </header>
+
+    <div class="pagina-corpo">
+        <div class="card-perfil fade-in">
+            <img src="{{ url_for('upload.servir_avatar', filename=usuario.foto_perfil) if usuario.foto_perfil != 'default.png' else url_for('static', filename='images/default_avatar.png') }}"
+                 class="avatar avatar-xl" alt="Avatar">
+            <h2>{{ usuario.nome_usuario }}</h2>
+            <span class="status-badge {{ 'online' if usuario.status_online else 'offline' }}">
+                <span class="status-dot {{ 'online' if usuario.status_online else '' }}"></span>
+                {{ 'Online' if usuario.status_online else 'Offline' }}
+            </span>
+            <p class="perfil-bio">{{ usuario.bio or "Este usuário ainda não escreveu uma bio." }}</p>
+
+            {% if not eh_proprio_perfil %}
+            <div class="perfil-acoes">
+                <button class="btn btn-primary" id="btn-iniciar-conversa" data-usuario-id="{{ usuario.id }}">
+                    <i class="fa-solid fa-message"></i> Enviar mensagem
+                </button>
+                <button class="btn btn-secundario" id="btn-toggle-bloqueio" data-usuario-id="{{ usuario.id }}" data-bloqueado="{{ 'true' if bloqueado else 'false' }}">
+                    <i class="fa-solid fa-ban"></i>
+                    <span>{{ 'Desbloquear' if bloqueado else 'Bloquear' }}</span>
+                </button>
+                <button class="btn btn-danger" id="btn-abrir-denuncia" data-usuario-id="{{ usuario.id }}">
+                    <i class="fa-solid fa-flag"></i> Denunciar
+                </button>
+            </div>
+            {% else %}
+            <a href="{{ url_for('settings.configuracoes') }}" class="btn btn-primary">
+                <i class="fa-solid fa-pen"></i> Editar perfil
+            </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<!-- Modal de denúncia (reaproveitado também nesta página) -->
+<div class="modal-overlay oculto" id="modal-denunciar">
+    <div class="modal-card fade-in">
+        <div class="modal-cabecalho">
+            <h3>Denunciar usuário</h3>
+            <button class="icone-btn" id="fechar-modal-denunciar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-corpo">
+            <div class="input-group">
+                <label>Motivo</label>
+                <select id="select-motivo-denuncia">
+                    <option value="spam">Spam</option>
+                    <option value="assedio">Assédio ou bullying</option>
+                    <option value="conteudo_impropio">Conteúdo impróprio</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Detalhes (opcional)</label>
+                <textarea id="input-detalhes-denuncia" rows="3" maxlength="500" placeholder="Descreva o ocorrido..."></textarea>
+            </div>
+            <button class="btn btn-danger btn-full" id="btn-enviar-denuncia">
+                <i class="fa-solid fa-flag"></i> Enviar denúncia
+            </button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

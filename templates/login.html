@@ -1,0 +1,58 @@
+{#
+    login.html
+    -----------
+    Tela de autenticação. O formulário aceita tanto o nome de usuário
+    quanto o e-mail no mesmo campo (ver routes/auth.py: a rota tenta
+    localizar o usuário primeiro por e-mail e depois por nome de usuário).
+    Mensagens de erro/sucesso (flash) são renderizadas pelo base.html.
+#}
+{% extends "base.html" %}
+{% block titulo %}Entrar · ChatFlow{% endblock %}
+
+{% block conteudo %}
+<div class="auth-page">
+    <div class="auth-card fade-in">
+        <!-- Cabeçalho com logo e slogan da aplicação -->
+        <div class="auth-brand">
+            <div class="auth-logo"><i class="fa-solid fa-comments"></i></div>
+            <h1>ChatFlow</h1>
+            <p>Converse em tempo real com quem importa.</p>
+        </div>
+
+        <!-- novalidate: a validação "de verdade" acontece no backend
+             (routes/auth.py); aqui usamos apenas `required` para uma
+             validação leve no próprio navegador. -->
+        <form method="POST" class="auth-form" novalidate>
+            <div class="input-group">
+                <label for="identificador">Usuário ou e-mail</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="identificador" name="identificador" placeholder="seu.usuario ou email@exemplo.com" required autofocus>
+                </div>
+            </div>
+
+            <div class="input-group">
+                <label for="senha">Senha</label>
+                <div class="input-icon">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="senha" name="senha" placeholder="Sua senha" required>
+                    <!-- Botão de "olho" para mostrar/ocultar a senha (ver static/js/auth.js) -->
+                    <button type="button" class="toggle-senha" tabindex="-1"><i class="fa-solid fa-eye"></i></button>
+                </div>
+            </div>
+
+            <button type="submit" class="btn btn-primary btn-full">
+                <i class="fa-solid fa-right-to-bracket"></i> Entrar
+            </button>
+        </form>
+
+        <p class="auth-footer">
+            Ainda não tem uma conta? <a href="{{ url_for('auth.registro') }}">Cadastre-se</a>
+        </p>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+<script src="{{ url_for('static', filename='js/auth.js') }}"></script>
+{% endblock %}

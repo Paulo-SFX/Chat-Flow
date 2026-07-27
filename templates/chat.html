@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block titulo %}ChatFlow{% endblock %}
+
+{% block conteudo %}
+<script type="application/json" id="dados-usuarios-online">{{ usuarios_online | tojson }}</script>
+
+<div class="app-shell" id="app-shell"
+     data-usuario-id="{{ usuario.id }}"
+     data-usuario-nome="{{ usuario.nome_usuario }}"
+     data-usuario-foto="{{ usuario.foto_perfil }}">
+
+    <!-- ===================== COLUNA 1: BARRA LATERAL ===================== -->
+    <aside class="sidebar">
+        <div class="sidebar-topo">
+            <div class="server-icone ativo" title="Início">
+                <i class="fa-solid fa-house"></i>
+            </div>
+            <div class="server-icone" id="btn-nova-sala" title="Criar / Entrar em sala">
+                <i class="fa-solid fa-plus"></i>
+            </div>
+        </div>
+
+        <div class="sidebar-salas" id="lista-salas-grupo">
+            <!-- Ícones de salas em grupo inseridos via JS -->
+        </div>
+
+        <div class="sidebar-rodape">
+            <div class="user-mini" id="btn-abrir-perfil" title="Meu perfil">
+                <img src="{{ url_for('upload.servir_avatar', filename=usuario.foto_perfil) if usuario.foto_perfil != 'default.png' else url_for('static', filename='images/default_avatar.png') }}"
+                     alt="Avatar" class="avatar avatar-sm">
+                <span class="status-dot online"></span>
+            </div>
+            <a href="{{ url_for('settings.configuracoes') }}" class="icone-btn" title="Configurações">
+                <i class="fa-solid fa-gear"></i>
+            </a>
+            <button class="icone-btn" id="btn-tema" title="Alternar tema">
+                <i class="fa-solid fa-moon"></i>
+            </button>
+            <a href="{{ url_for('auth.logout') }}" class="icone-btn" title="Sair">
+                <i class="fa-solid fa-right-from-bracket"></i>
+            </a>
+        </div>
+    </aside>
+
+    <!-- ===================== COLUNA 2: LISTA DE CONVERSAS ===================== -->
+    <section class="painel-conversas">
+        <div class="painel-cabecalho">
+            <h2>Conversas</h2>
+            <button class="icone-btn" id="btn-buscar-usuario" title="Nova conversa">
+                <i class="fa-solid fa-user-plus"></i>
+            </button>
+        </div>
+
+        <div class="busca-container">
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <input type="text" id="input-busca" placeholder="Pesquisar conversas ou mensagens...">
+        </div>
+
+        <div id="resultado-busca" class="resultado-busca oculto"></div>
+
+        <div class="lista-conversas" id="lista-conversas">
+            <!-- Conversas inseridas via JS -->
+            <div class="conversas-vazio" id="conversas-vazio">
+                <i class="fa-solid fa-comments"></i>
+                <p>Nenhuma conversa ainda.<br>Clique em <strong>+</strong> para começar.</p>
+            </div>
+        </div>
+
+        <div class="painel-usuarios-online">
+            <h3><span class="status-dot online"></span> Online <span id="contador-online">(0)</span></h3>
+            <div class="lista-online" id="lista-online"></div>
+        </div>
+    </section>
+
+    <!-- ===================== COLUNA 3: ÁREA PRINCIPAL DO CHAT ===================== -->
+    <section class="area-chat" id="area-chat">
+
+        <div class="chat-vazio" id="chat-vazio">
+            <i class="fa-solid fa-comment-dots"></i>
+            <h3>Selecione uma conversa</h3>
+            <p>Escolha uma conversa existente ou inicie uma nova.</p>
+        </div>
+
+        <div class="chat-ativo oculto" id="chat-ativo">
+            <header class="chat-cabecalho">
+                <button class="icone-btn mobile-somente" id="btn-voltar-conversas">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <img src="" alt="" class="avatar avatar-sm" id="chat-header-avatar">
+                <div class="chat-header-info">
+                    <h3 id="chat-header-nome">—</h3>
+                    <span id="chat-header-status" class="chat-header-status">offline</span>
+                </div>
+                <div class="chat-header-acoes">
+                    <button class="icone-btn" id="btn-info-sala" title="Detalhes da conversa">
+                        <i class="fa-solid fa-circle-info"></i>
+                    </button>
+                    <div class="menu-dropdown" id="menu-opcoes-sala">
+                        <button class="icone-btn" id="btn-opcoes-sala" title="Mais opções">
+                            <i class="fa-solid fa-ellipsis-vertical"></i>
+                        </button>
+                        <div class="dropdown-conteudo oculto" id="dropdown-opcoes-sala">
+                            <button data-acao="bloquear"><i class="fa-solid fa-ban"></i> Bloquear usuário</button>
+                            <button data-acao="denunciar"><i class="fa-solid fa-flag"></i> Denunciar usuário</button>
+                            <button data-acao="sair"><i class="fa-solid fa-door-open"></i> Sair da sala</button>
+                        </div>
+                    </div>
+                </div>
+            </header>
+
+            <div class="mensagens-container" id="mensagens-container">
+                <div class="mensagens-lista" id="mensagens-lista"></div>
+                <div class="indicador-digitando oculto" id="indicador-digitando">
+                    <span class="ponto"></span><span class="ponto"></span><span class="ponto"></span>
+                    <span id="texto-digitando"></span>
+                </div>
+            </div>
+
+            <form class="campo-digitacao" id="form-mensagem" autocomplete="off">
+                <button type="button" class="icone-btn" id="btn-emoji" title="Emojis">
+                    <i class="fa-regular fa-face-smile"></i>
+                </button>
+                <div id="painel-emoji" class="painel-emoji oculto"></div>
+
+                <button type="button" class="icone-btn" id="btn-anexar" title="Enviar imagem">
+                    <i class="fa-solid fa-image"></i>
+                </button>
+                <input type="file" id="input-imagem" accept="image/*" hidden>
+
+                <input type="text" id="input-mensagem" placeholder="Digite uma mensagem..." maxlength="2000">
+
+                <button type="submit" class="btn-enviar" title="Enviar">
+                    <i class="fa-solid fa-paper-plane"></i>
+                </button>
+            </form>
+        </div>
+    </section>
+</div>
+
+<!-- ============ MODAL: Nova sala / entrar em sala ============ -->
+<div class="modal-overlay oculto" id="modal-nova-sala">
+    <div class="modal-card fade-in">
+        <div class="modal-cabecalho">
+            <h3>Salas de chat</h3>
+            <button class="icone-btn" id="fechar-modal-sala"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-abas">
+            <button class="aba ativa" data-aba="criar">Criar sala</button>
+            <button class="aba" data-aba="entrar">Entrar em sala</button>
+        </div>
+        <div class="modal-corpo">
+            <div class="aba-conteudo" id="aba-criar">
+                <div class="input-group">
+                    <label>Nome da sala</label>
+                    <input type="text" id="input-nome-sala" placeholder="Ex: Time de Design" maxlength="100">
+                </div>
+                <div class="input-group">
+                    <label>Descrição (opcional)</label>
+                    <input type="text" id="input-descricao-sala" placeholder="Sobre o que é essa sala?" maxlength="255">
+                </div>
+                <button class="btn btn-primary btn-full" id="btn-criar-sala">
+                    <i class="fa-solid fa-plus"></i> Criar sala
+                </button>
+            </div>
+            <div class="aba-conteudo oculto" id="aba-entrar">
+                <div id="lista-salas-disponiveis" class="lista-salas-disponiveis"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ MODAL: Buscar usuário / nova conversa ============ -->
+<div class="modal-overlay oculto" id="modal-buscar-usuario">
+    <div class="modal-card fade-in">
+        <div class="modal-cabecalho">
+            <h3>Nova conversa</h3>
+            <button class="icone-btn" id="fechar-modal-usuario"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-corpo">
+            <div class="busca-container">
+                <i class="fa-solid fa-magnifying-glass"></i>
+                <input type="text" id="input-busca-usuario" placeholder="Buscar por nome de usuário...">
+            </div>
+            <div id="resultado-busca-usuario" class="lista-resultado-usuario"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ MODAL: Denunciar usuário ============ -->
+<div class="modal-overlay oculto" id="modal-denunciar">
+    <div class="modal-card fade-in">
+        <div class="modal-cabecalho">
+            <h3>Denunciar usuário</h3>
+            <button class="icone-btn" id="fechar-modal-denunciar"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div class="modal-corpo">
+            <div class="input-group">
+                <label>Motivo</label>
+                <select id="select-motivo-denuncia">
+                    <option value="spam">Spam</option>
+                    <option value="assedio">Assédio ou bullying</option>
+                    <option value="conteudo_impropio">Conteúdo impróprio</option>
+                    <option value="outro">Outro</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Detalhes (opcional)</label>
+                <textarea id="input-detalhes-denuncia" rows="3" maxlength="500" placeholder="Descreva o ocorrido..."></textarea>
+            </div>
+            <button class="btn btn-danger btn-full" id="btn-enviar-denuncia">
+                <i class="fa-solid fa-flag"></i> Enviar denúncia
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- Notificações flutuantes de novas mensagens -->
+<div id="notificacoes-flutuantes" class="notificacoes-flutuantes"></div>
+{% endblock %}
+
+{% block js_extra %}
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script src="{{ url_for('static', filename='js/emoji.js') }}"></script>
+<script src="{{ url_for('static', filename='js/socket.js') }}"></script>
+<script src="{{ url_for('static', filename='js/chat.js') }}"></script>
+<script src="{{ url_for('static', filename='js/ui.js') }}"></script>
+{% endblock %}

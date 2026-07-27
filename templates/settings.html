@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% block titulo %}Configurações · ChatFlow{% endblock %}
+
+{% block conteudo %}
+<div class="pagina-secundaria">
+    <header class="pagina-topo">
+        <a href="{{ url_for('chat.index') }}" class="icone-btn"><i class="fa-solid fa-arrow-left"></i></a>
+        <h1>Configurações</h1>
+    </header>
+
+    <div class="pagina-corpo">
+        <!-- Foto de perfil -->
+        <div class="card-config fade-in">
+            <h3><i class="fa-solid fa-image"></i> Foto de perfil</h3>
+            <div class="config-foto-area">
+                <img id="preview-avatar"
+                     src="{{ url_for('upload.servir_avatar', filename=usuario.foto_perfil) if usuario.foto_perfil != 'default.png' else url_for('static', filename='images/default_avatar.png') }}"
+                     class="avatar avatar-lg" alt="Avatar">
+                <div>
+                    <button class="btn btn-secundario" id="btn-trocar-foto">
+                        <i class="fa-solid fa-upload"></i> Alterar foto
+                    </button>
+                    <input type="file" id="input-avatar" accept="image/*" hidden>
+                    <p class="texto-ajuda">PNG, JPG ou GIF. Máximo 8MB.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Nome de usuário -->
+        <div class="card-config fade-in">
+            <h3><i class="fa-solid fa-at"></i> Nome de usuário</h3>
+            <div class="input-group">
+                <input type="text" id="input-novo-nome" value="{{ usuario.nome_usuario }}" minlength="3" maxlength="30">
+            </div>
+            <button class="btn btn-primary" id="btn-salvar-nome">Salvar alterações</button>
+        </div>
+
+        <!-- Bio -->
+        <div class="card-config fade-in">
+            <h3><i class="fa-solid fa-pen"></i> Bio</h3>
+            <div class="input-group">
+                <textarea id="input-bio" rows="3" maxlength="255" placeholder="Fale um pouco sobre você...">{{ usuario.bio or '' }}</textarea>
+            </div>
+            <button class="btn btn-primary" id="btn-salvar-bio">Salvar bio</button>
+        </div>
+
+        <!-- Senha -->
+        <div class="card-config fade-in">
+            <h3><i class="fa-solid fa-lock"></i> Alterar senha</h3>
+            <div class="input-group">
+                <label>Senha atual</label>
+                <input type="password" id="input-senha-atual">
+            </div>
+            <div class="input-group">
+                <label>Nova senha</label>
+                <input type="password" id="input-nova-senha" minlength="6">
+            </div>
+            <div class="input-group">
+                <label>Confirmar nova senha</label>
+                <input type="password" id="input-confirmar-senha" minlength="6">
+            </div>
+            <button class="btn btn-primary" id="btn-salvar-senha">Alterar senha</button>
+        </div>
+
+        <!-- Tema -->
+        <div class="card-config fade-in">
+            <h3><i class="fa-solid fa-palette"></i> Aparência</h3>
+            <div class="opcoes-tema">
+                <button class="opcao-tema" data-tema="claro">
+                    <i class="fa-solid fa-sun"></i> Claro
+                </button>
+                <button class="opcao-tema" data-tema="escuro">
+                    <i class="fa-solid fa-moon"></i> Escuro
+                </button>
+            </div>
+        </div>
+
+        <!-- Usuários bloqueados -->
+        <div class="card-config fade-in">
+            <h3><i class="fa-solid fa-ban"></i> Usuários bloqueados</h3>
+            <div id="lista-bloqueados-config" class="lista-bloqueados"></div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_extra %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %}

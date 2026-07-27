@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR" data-tema="escuro">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block titulo %}ChatFlow{% endblock %}</title>
+
+    <!-- Fontes -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- CSS próprio -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/variables.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    {% block css_extra %}{% endblock %}
+</head>
+<body>
+
+    {% with mensagens = get_flashed_messages(with_categories=true) %}
+        {% if mensagens %}
+        <div class="flash-container" id="flash-container">
+            {% for categoria, mensagem in mensagens %}
+                <div class="flash flash-{{ categoria }}">
+                    <i class="fa-solid {{ 'fa-circle-check' if categoria == 'success' else 'fa-circle-exclamation' }}"></i>
+                    <span>{{ mensagem }}</span>
+                    <button class="flash-fechar" onclick="this.parentElement.remove()">&times;</button>
+                </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    {% endwith %}
+
+    {% block conteudo %}{% endblock %}
+
+    <script src="{{ url_for('static', filename='js/theme.js') }}"></script>
+    {% block js_extra %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,72 @@
+/* ===================================================================
+   variables.css
+   Define a paleta de cores e tokens de design para os temas
+   claro e escuro do ChatFlow.
+=================================================================== */
+
+:root {
+    /* Tema escuro (padrão) */
+    --bg-principal: #0f172a;
+    --bg-painel: #1e293b;
+    --bg-chat: #111827;
+    --bg-elevado: #253449;
+    --bg-hover: #2c3e57;
+    --bg-input: #1a2436;
+
+    --cor-primaria: #3b82f6;
+    --cor-primaria-hover: #2563eb;
+    --cor-secundaria: #60a5fa;
+    --cor-destaque: #22c55e;
+    --cor-perigo: #ef4444;
+    --cor-perigo-hover: #dc2626;
+
+    --texto-principal: #ffffff;
+    --texto-secundario: #cbd5e1;
+    --texto-terciario: #64748b;
+
+    --borda: rgba(255, 255, 255, 0.08);
+    --borda-forte: rgba(255, 255, 255, 0.14);
+
+    --sombra-suave: 0 4px 16px rgba(0, 0, 0, 0.25);
+    --sombra-forte: 0 12px 32px rgba(0, 0, 0, 0.4);
+
+    --bolha-recebida: #1e293b;
+    --bolha-enviada: linear-gradient(135deg, #3b82f6, #2563eb);
+
+    --raio: 12px;
+    --raio-sm: 8px;
+    --raio-pill: 999px;
+
+    --transicao: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+
+    --fonte: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
+}
+
+html[data-tema="claro"] {
+    --bg-principal: #f1f5f9;
+    --bg-painel: #ffffff;
+    --bg-chat: #f8fafc;
+    --bg-elevado: #ffffff;
+    --bg-hover: #eef2f7;
+    --bg-input: #eef2f7;
+
+    --cor-primaria: #3b82f6;
+    --cor-primaria-hover: #2563eb;
+    --cor-secundaria: #2563eb;
+    --cor-destaque: #16a34a;
+    --cor-perigo: #ef4444;
+    --cor-perigo-hover: #dc2626;
+
+    --texto-principal: #0f172a;
+    --texto-secundario: #475569;
+    --texto-terciario: #94a3b8;
+
+    --borda: rgba(15, 23, 42, 0.08);
+    --borda-forte: rgba(15, 23, 42, 0.14);
+
+    --sombra-suave: 0 4px 16px rgba(15, 23, 42, 0.08);
+    --sombra-forte: 0 12px 32px rgba(15, 23, 42, 0.14);
+
+    --bolha-recebida: #ffffff;
+    --bolha-enviada: linear-gradient(135deg, #3b82f6, #2563eb);
+}
